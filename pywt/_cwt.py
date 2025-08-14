@@ -119,11 +119,13 @@ def cwt(data, scales, wavelet, sampling_period=1., method='conv', axis=-1,
     if not np.isscalar(axis):
         raise AxisError("axis must be a scalar.")
 
-    dt_out = dt_cplx if wavelet.complex_cwt else dt
+    # dt_out = dt_cplx if wavelet.complex_cwt else dt # HACK: Comment out
+    dt_out = dt_cplx if hasattr(wavelet, 'complex_cwt') and wavelet.complex_cwt else dt # HACK: Add
     out = np.empty((np.size(scales),) + data.shape, dtype=dt_out)
 
     int_psi, x = integrate_wavelet(wavelet, precision=precision)
-    int_psi = np.conj(int_psi) if wavelet.complex_cwt else int_psi
+    # int_psi = np.conj(int_psi) if wavelet.complex_cwt else int_psi # HACK: Comment out
+    int_psi = np.conj(int_psi) if hasattr(wavelet, 'complex_cwt') and wavelet.complex_cwt else int_psi # HACK: Add
 
     # convert int_psi, x to the same precision as the data
     dt_psi = dt_cplx if int_psi.dtype.kind == 'c' else dt
